@@ -23,7 +23,7 @@ class Weather:
         print("WIND: " + str(self.wind))
 
 
-class Team:
+class PFR_Team:
     def __init__(self, name, short, record):
         self.name = name
         self.short = short
@@ -33,21 +33,21 @@ class Team:
         print(self.name + " (" + self.short + ") [" + str(self.record[0]) + "," + str(self.record[1]) + "]")
 
 
-class Game:
-    def __init__(self, date, season, week, stadium, roof, surface, vegasLine, overUnder, weather, homeTeam, visitingTeam, homeScore, visitingScore, attendance):
+class PFR_Game:
+    def __init__(self, date, season, week, stadium, roof, surface, vegas_line, over_under, weather, home_team, away_team, home_score, away_score, attendance):
         self.date = date
         self.season = season
         self.week = week
         self.stadium = stadium
         self.roof = roof
         self.surface = surface
-        self.vegasLine = vegasLine
-        self.overUnder = overUnder
+        self.vegas_line = vegas_line
+        self.over_under = over_under
         self.weather = weather
-        self.homeTeam = homeTeam
-        self.homeScore = homeScore
-        self.visitingScore = visitingScore
-        self.visitingTeam = visitingTeam
+        self.home_team = home_team
+        self.home_score = home_score
+        self.away_score = away_score
+        self.away_team = away_team
         self.attendance = attendance
         self.plays = []
 
@@ -59,44 +59,47 @@ class Game:
         print("LOCATION: " + str(self.stadium))
         print("ROOF: " + str(self.roof))
         print("SURFACE: " + str(self.surface))
-        print("VEGAS LINE: " + str(self.vegasLine))
-        print("OVER UNDER: " + str(self.overUnder))
+        print("VEGAS LINE: " + str(self.vegas_line))
+        print("OVER UNDER: " + str(self.over_under))
         print("ATTENDANCE: " + str(self.attendance))
         print("......... WEATHER ..........")
         if self.weather != None:
             self.weather.out()
         print("######## HOME TEAM #########")
-        self.homeTeam.out()
-        print(str(self.homeScore))
+        self.home_team.out()
+        print(str(self.home_score))
         print("###### VISITING TEAM #######")
-        self.visitingTeam.out()
-        print(str(self.visitingScore))
+        self.away_team.out()
+        print(str(self.away_score))
         print("########## PLAYS ###########")
-        print("QRT" + "\t" + "TIME" + "\t" + "LOC" + "\t" + "FIEL" + "\t" + "BALL" + "\t" + "SITU" + "\t" + "DOWN" + "\t" + "TOGO" + "\t" + "SPEC" + "\t" + "HOME" + "\t" + "VISI" + "\t" + "WINP")
+        print("QRT" + "\t" + "TIME" + "\t" + "LOC" + "\t" + "FIEL" + "\t" + "SITU" + "\t" + "DOWN" + "\t" + "TOGO" + "\t" + "SPEC" + "\t" + "HOME" + "\t" + "VISI" + "\t" + "WINP")
         for play in self.plays:
             play.out()
         print("---------------------------")
 
+    def other_team(self, short):
+        if short == self.home_team.short:
+            return self.away_team
+        return self.home_team
 
-class Play:
-    def __init__(self, ball="home", quarter=0, time=15*60, location=35, field="", situation="", down=0, togo=0, description="", special="", scoreHome=0, scoreVisitor=0, winPercentageHome=0):
+
+class PFR_Play:
+    def __init__(self, quarter=0, time=15*60, location=35, field="", situation="", down=0, togo=0, description="", special="", score_home=0, score_away=0, win_percentage_home=0):
         self.quarter = quarter
         self.time = time
         self.location = location
-        self.ball = ball
         self.situation = situation
         self.field = field
         self.down = 0
         self.togo = 0
         self.description = description
         self.special = special
-        self.scoreHome = scoreHome
-        self.scoreVisitor = scoreVisitor
-        self.winPercentageHome = winPercentageHome
-        self.field = field
+        self.score_home = score_home
+        self.score_away = score_away
+        self.win_percentage_home = win_percentage_home
 
     def out(self):
-        print(str(self.quarter) + "\t" + str(self.time) + "\t" + str(self.location) + "\t" + str(self.field) + "\t" + str(self.ball) + "\t" + str(self.situation) + "\t" + str(self.down) + "\t" + str(self.togo) + "\t" + self.special + "\t" + str(self.scoreHome) + "\t" + str(self.scoreVisitor) + "\t" + str(self.winPercentageHome))
+        print(str(self.quarter) + "\t" + str(self.time) + "\t" + str(self.location) + "\t" + str(self.field) + "\t" + str(self.situation) + "\t" + str(self.down) + "\t" + str(self.togo) + "\t" + self.special + "\t" + str(self.score_home) + "\t" + str(self.score_away) + "\t" + str(self.win_percentage_home))
         print(self.description)
 
 
@@ -159,7 +162,7 @@ def get_team(page, home=True):
     score_b = int(scorebox.split("<div class=\"score\">")[2].split("</div>")[0])
     record_b = scorebox.split("<div class=\"score\">")[2].split("</div>")[1].split("<div>")[1].split("</div>")[0].split("-")
 
-    vis_short = page.split("\" data-stat=\"vis_stat\"")[0].split("<th aria-label=\"")[-1]
+    away_short = page.split("\" data-stat=\"vis_stat\"")[0].split("<th aria-label=\"")[-1]
     home_short = page.split("\" data-stat=\"home_stat\"")[0].split("<th aria-label=\"")[-1]
     record = []
 
@@ -167,8 +170,8 @@ def get_team(page, home=True):
         name = teams.teams[home_short]
         short = home_short
     else:
-        name = teams.teams[vis_short]
-        short = vis_short
+        name = teams.teams[away_short]
+        short = away_short
 
     if name == name_a:
         score = score_a
@@ -177,7 +180,7 @@ def get_team(page, home=True):
         score = score_b
         record = record_b
 
-    return Team(name=name, short=short, record=list(map(int, record))), score
+    return PFR_Team(name=name, short=short, record=list(map(int, record))), score
 
 
 def get_date(page):
@@ -228,7 +231,7 @@ def get_game(url):
     print(page)
 
     homeTeam, homeScore = get_team(page, True)
-    visTeam, visScore = get_team(page, False)
+    awayTeam, awayScore = get_team(page, False)
 
     date = get_date(page)
     hours = get_time_hours(page)
@@ -241,7 +244,7 @@ def get_game(url):
     over_under = get_over_under(page)
     attendance = get_attendance(page)
 
-    game = Game(date=date.date, season=int(date.format("YYYY")), week=week, stadium=stadium, roof=roof, surface=surface, vegasLine=vegas_line, overUnder=over_under, weather=None, homeTeam=homeTeam, visitingTeam=visTeam, homeScore=homeScore, visitingScore=visScore, attendance=attendance)
+    game = PFR_Game(date=date.date, season=int(date.format("YYYY")), week=week, stadium=stadium, roof=roof, surface=surface, vegas_line=vegas_line, over_under=over_under, weather=None, home_team=homeTeam, away_team=awayTeam, home_score=homeScore, away_score=awayScore, attendance=attendance)
 
     # Get plays
     pbp_table_body = page.split("<table class=\"sortable stats_table\" id=\"pbp\"")[1].split("</table>")[0].split("<tbody>")[1].split("</tbody>")[0]
@@ -253,7 +256,7 @@ def get_game(url):
     for row in pbp_rows:
         row = row.replace("<th", "<td").replace("</th", "</td")
 
-        play = Play()
+        play = PFR_Play()
         if "thead" in row.split(">")[0]:
             continue
         elif "divider" in row.split(">")[0]:
@@ -290,35 +293,39 @@ def get_game(url):
                 l = text(cell)
                 if l != "" and l != " ":
                     team = l.split(" ")[0]
+                    real_team = teams.real_short(team)
                     yard = int(l.split(" ")[1])
                     play.location = yard
-                    play.field = team
+                    play.field = real_team
+                else:
+                    play.location = 0
+                    play.field = ""
             elif "data-stat=\"detail\"" in cell:
                 play.description = text(cell)
             elif "data-stat=\"pbp_score_aw\"" in cell:
-                play.scoreVisitor = int(text(cell))
+                play.score_away = int(text(cell))
             elif "data-stat=\"pbp_score_hm\"" in cell:
-                play.scoreHome = int(text(cell))
+                play.score_home = int(text(cell))
             elif "data-stat=\"home_wp\"" in cell:
                 wp = text(cell)
                 if wp != "":
-                    play.winPercentageHome = float(wp)
+                    play.win_percentage_home = float(wp)
                 else:
-                    play.winPercentageHome = -1
+                    play.win_percentage_home = -1
 
         plays.append(play)
 
     game.plays = plays
     return game
 
-year = 1995
-week = 1
-games = get_game_urls(year, week)
-for url in games:
-    #homeTeam = get_team("home")
-    #Team(name="Indianapolis Colts", short="IND", record=[0, 1, 0])
-    #awayTeam = get_team("away")
-    #Team(name="Cincinnati Bengals", short="CIN", record=[1, 0, 0])
-    game = get_game(url)
-    game.out()
-    #break
+
+def get_games(year, week, max=10000000):
+    games = []
+    game_urls = get_game_urls(year, week)
+    for url in game_urls:
+        game = get_game(url)
+        game.out()
+        games.append(game)
+        if len(games) >= max:
+            break
+    return games
