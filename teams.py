@@ -1,4 +1,12 @@
 
+cities = {
+    "CIN": "Cincinnati",
+    "IND": "Indianapolis",
+    "GB": "Indianapolis",
+    "KC": "Kansas City",
+    "NYJ": "New York Jets"
+}
+
 teams = {
     "CIN": "Cincinnati Bengals",
     "IND": "Indianapolis Colts"
@@ -7,6 +15,7 @@ teams = {
 synonyms = {
     "CLT": "IND"
 }
+
 
 def real_short(short):
     if short in synonyms.keys():
