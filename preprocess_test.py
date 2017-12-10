@@ -1,18 +1,24 @@
 import preproces
+from preproces import Outcome_Type
+
 
 class Game_Stats:
 
     def __init__(self):
         self.home_team_pass_yards = 0
         self.home_team_ground_yards = 0
-        self.home_team_total_yards = 0
         self.home_team_penalty_yards = 0
         self.home_team_score = 0
         self.away_team_pass_yards = 0
         self.away_team_ground_yards = 0
-        self.away_team_total_yards = 0
         self.away_team_penalty_yards = 0
         self.away_team_score = 0
+
+    def home_team_total_yards(self):
+        return self.home_team_ground_yards + self.home_team_pass_yards
+
+    def away_team_total_yards(self):
+        return self.away_team_ground_yards + self.away_team_pass_yards
 
     def out(self):
         print("-- HOME --")
@@ -67,13 +73,13 @@ class Game_Stats:
                 self.home_team_ground_yards += play.yards
             elif play.posteam == game.away.team:
                 self.away_team_ground_yards += play.yards
-        elif play.outcome_type == preproces.Outcome_Type.COMPLETION_YARDS:
+        elif play.outcome_type == preproces.Outcome_Type.COMPLETION_YARDS or (play.play_type == preproces.Play_Type.PASS and play.outcome_type == Outcome_Type.TOUCHDOWN_OFF):
             if play.posteam == game.home.team:
                 self.home_team_pass_yards += play.yards
             elif play.posteam == game.away.team:
                 self.away_team_pass_yards += play.yards
 
-games = preproces.get_processed_games(limit=1)
+games = preproces.get_processed_games(limit=3)
 
 
 def simulate_game(game):
@@ -88,14 +94,14 @@ def simulate_game(game):
 for game in games:
     stats = simulate_game(game)
     #if not stats_same(game, stats):
-    stats.out()
+    #stats.out()
     print("## GAME ##")
-    print("Home score: " + str(game.game.home_score))
-    print("Home p yds: " + str(game.game.home.pyds))
-    print("Home r yds: " + str(game.game.home.ryds))
-    print("Home t yds: " + str(game.game.home.totyds))
+    print("Home score: " + str(game.game.home_score) + " | " + str(stats.home_team_score))
+    print("Home p yds: " + str(game.game.home.pyds) + " | " + str(stats.home_team_pass_yards))
+    print("Home r yds: " + str(game.game.home.ryds) + " | " + str(stats.home_team_ground_yards))
+    print("Home t yds: " + str(game.game.home.totyds) + " | " + str(stats.home_team_total_yards()))
 
-    print("Away score: " + str(game.game.away_score))
-    print("Away p yds: " + str(game.game.away.pyds))
-    print("Away r yds: " + str(game.game.away.ryds))
-    print("Away t yds: " + str(game.game.away.totyds))
+    print("Away score: " + str(game.game.away_score) + " | " + str(stats.away_team_score))
+    print("Away p yds: " + str(game.game.away.pyds) + " | " + str(stats.away_team_pass_yards))
+    print("Away r yds: " + str(game.game.away.ryds) + " | " + str(stats.away_team_ground_yards))
+    print("Away t yds: " + str(game.game.away.totyds) + " | " + str(stats.away_team_total_yards()))
