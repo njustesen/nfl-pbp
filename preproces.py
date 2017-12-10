@@ -224,19 +224,20 @@ class Play:
                         next = ""
                 elif next == "yard" and "#" not in word and ")" not in word and "-" not in word and "due" not in word and "bench" not in word:
                     try:
-                        int(yard)
+                        if "." in word or "," in word or ";" in word:
+                            if "." in word and "," in word:
+                                word = word[:-2]
+                            else:
+                                word = word[:-1]
+                        int(word)
                         yard = word
                         real_field = field
-                    except:
+                    except Exception as err:
                         pass
                     next = ""
                 else:
                     next = ""
-            if "." in yard or "," in yard or ";" in yard:
-                if "." in yard and "," in yard:
-                    yard = yard[:-2]
-                else:
-                    yard = yard[:-1]
+
             to = self.to_goal_field_yrd(real_field, yard)
             return self.togoal - to
         except Exception as err:
@@ -382,7 +383,7 @@ class Play:
         if self.qb_switch:
             return Play_Type.NONE
 
-        if "Two Point Attempt" in self.description or "TWO-POINT CONVERSION ATTEMPT":
+        if "Two Point Attempt" in self.description or "TWO-POINT CONVERSION ATTEMPT" in self.description:
             return Play_Type.CONVERSION_ATTEMPT
 
         if "Two-Minute Warning" in self.description:
@@ -510,7 +511,7 @@ def fix_yards(plays):
         i += 1
 
 
-def get_processed_games():
+def get_processed_games(limit=0):
     games = []
     i = 0
     for filename in glob.glob(dir + '*'):
@@ -524,6 +525,29 @@ def get_processed_games():
                 games.append(Game(game, plays))
             i += 1
 
+            '''
+            for play in plays:
+                print(play.description)
+                print(play.play_type)
+                print("Possession: " + str(play.posteam))
+                print("Down: " + str(play.down))
+                print("Togo: " + str(play.ydstogo))
+                print("To goal: " + str(play.togoal))
+                print("Shotgun: " + str(play.is_shotgun()))
+                print("No huddle: " + str(play.is_no_huddle()))
+                print("Wildcat: " + str(play.is_wildcat()))
+                print("->")
+                print(play.outcome_type)
+                print(play.challenge_type)
+                print("Yards: " + str(play.yards))
+                print("Clock: " + str(play.clock))
+                print("Yards: " + str(play.yards))
+                print("----------------")
+            '''
+
+        if len(games) == limit:
+            return games
+
     return games
 
-get_processed_games()
+get_processed_games(limit=1)

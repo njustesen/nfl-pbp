@@ -32,6 +32,7 @@ cities = {
     "SEA": "Seattle",
     "SF": "San Francisco",
     "TB": "Tampa Bay",
+    "JAX": "Jacksonville"
 
 }
 
