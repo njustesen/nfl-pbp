@@ -16,6 +16,7 @@ dir = '/Users/noju/Documents/nfl_games/'
 
 
 class Play_Type(Enum):
+    NONE = 0
     RUN = 1
     PASS = 2
     PUNT = 3
@@ -117,28 +118,30 @@ class Play:
         self.note = play.note
         self.wildcat = "Wildcat" in self.description
         self.penalty = "PENALTY" in self.description
+        self.fumble = "FUMBLES" in self.description
+        self.interception = "INTERCEPTED" in self.description
         self.togoal = self.to_goal()
+        self.qb_switch = "in at Quarterback" in self.description
         self.play_type = self.get_play_type()
         self.outcome_type = self.get_outcome_type(next_play)
         self.yards = self.yards_on_play(next_play)
-        self.clock = self.clock()
+        self.clock = self.clock_stopped()
         self.challenge_type = self.challenge_on_play()
 
-
     def challenge_on_play(self):
-        try:
-            if teams.cities[self.posteam] + " challenged" in self.description:
-                if "Upheld" in self.description:
-                    return Challenge_Type.CHALLENGE_OFF_UNSUCCESSFUL
-                else:
-                    return Challenge_Type.CHALLENGE_OFF_SUCCESSFUL
-            elif teams.cities[self.opponent] + " challenged" in self.description:
-                if "Upheld" in self.description:
-                    return Challenge_Type.CHALLENGE_DEF_UNSUCCESSFUL
-                else:
-                    return Challenge_Type.CHALLENGE_DEF_SUCCESSFUL
-        except Exception as err:
-            print(err)
+        if self.posteam in ['', None] or self.opponent in ['', None]:
+            return Challenge_Type.NO_CHALLENGE
+        if teams.cities[self.posteam] + " challenged" in self.description:
+            if "Upheld" in self.description:
+                return Challenge_Type.CHALLENGE_OFF_UNSUCCESSFUL
+            else:
+                return Challenge_Type.CHALLENGE_OFF_SUCCESSFUL
+        elif teams.cities[self.opponent] + " challenged" in self.description:
+            if "Upheld" in self.description:
+                return Challenge_Type.CHALLENGE_DEF_UNSUCCESSFUL
+            else:
+                return Challenge_Type.CHALLENGE_DEF_SUCCESSFUL
+
         return Challenge_Type.NO_CHALLENGE
 
     def fix_yards(self, next_play):
@@ -173,18 +176,16 @@ class Play:
             return 50
         return self.to_goal_field_yrd(self.yrdln.split(" ")[0], self.yrdln.split(" ")[1])
 
-    def clock(self):
+    def clock_stopped(self):
         if self.play_type == Play_Type.RUN:
             return self.outcome_type == Outcome_Type.GROUND_YARDS and "pushed ob" not in self.description
 
         if self.play_type == Play_Type.PASS:
             return self.outcome_type == Outcome_Type.COMPLETION_YARDS and "pushed ob" not in self.description
 
-        return False
+        return self.outcome_type == Outcome_Type.COMPLETION_YARDS and "ran ob" not in self.description
 
     def yards_on_play(self, next_play):
-
-
 
         if self.outcome_type in [Outcome_Type.TOUCHDOWN_OFF, Outcome_Type.EXTRA_POINT_GOOD, Outcome_Type.CONVERSION_GOOD, Outcome_Type.FIELD_GOAL, Outcome_Type.SAFETY_OFF]:
             return self.togoal
@@ -194,34 +195,67 @@ class Play:
             return 0
         if self.outcome_type == Outcome_Type.TOUCHBACK:
             return self.togoal - 20
+        if self.play_type in [Play_Type.TIMEOUT_DEF, Play_Type.TIMEOUT_OTHER, Play_Type.TIMEOUT_OFF]:
+            return 0
 
         # Extract from description
-        field = ""
-        yard = ""
-        next = ""
-        for word in self.description.split(" "):
-            if next == "field" and word == "the":
-                next = ""
-            elif word in ["to", "at"]:
-                next = "field"
-            elif next == "field":
-                if word == "50":
-                    yard = "50"
+        try:
+
+            field = ""
+            real_field = ""
+            yard = ""
+            next = ""
+            for word in self.description.split(" "):
+                if next == "field" and word == "the":
+                    next = ""
+                elif word in ["to", "at"]:
+                    next = "field"
+                elif next == "field":
+                    if word == "50":
+                        yard = "50"
+                        next = ""
+                    elif word == "40-yard":
+                        yard = "40"
+                        next = ""
+                    elif word in [self.posteam, self.opponent]:
+                        field = word
+                        next = "yard"
+                    else:
+                        next = ""
+                elif next == "yard" and "#" not in word and ")" not in word and "-" not in word and "due" not in word and "bench" not in word:
+                    try:
+                        int(yard)
+                        yard = word
+                        real_field = field
+                    except:
+                        pass
                     next = ""
                 else:
-                    field = word
-                    next = "yard"
-            elif next == "yard":
-                yard = word
-                next = ""
-            else:
-                next = ""
-        if "." in yard or "," in yard:
-            yard = yard[:-1]
-        to = self.to_goal_field_yrd(field, yard)
-        return self.togoal - to
+                    next = ""
+            if "." in yard or "," in yard or ";" in yard:
+                if "." in yard and "," in yard:
+                    yard = yard[:-2]
+                else:
+                    yard = yard[:-1]
+            to = self.to_goal_field_yrd(real_field, yard)
+            return self.togoal - to
+        except Exception as err:
+            print(str(err) + ": " + self.description)
+        return 0
+
+    def in_description(self, word):
+        return word in self.description
+
+    def get_fumble_recovering_team(self):
+        return self.description.split("RECOVERED by ")[-1].split("-")[0]
 
     def get_outcome_type(self, next_play):
+
+        if self.play_type == Play_Type.UNKNOWN:
+            return Outcome_Type.NONE
+
+        if self.qb_switch:
+            return Outcome_Type.NONE
 
         description = self.description
 
@@ -233,7 +267,7 @@ class Play:
         elif self.play_type in [Play_Type.TIMEOUT_DEF, Play_Type.TIMEOUT_OTHER, Play_Type.TIMEOUT_OFF]:
             return Outcome_Type.TIMEOUT
         elif self.play_type == Play_Type.CONVERSION_ATTEMPT:
-            if self.note == "2P":
+            if self.note == "2P":  # or "ATTEMPT SUCCEEDS" in self.description
                 return Outcome_Type.CONVERSION_GOOD
             else:
                 return Outcome_Type.CONVERSION_NO_GOOD
@@ -245,7 +279,7 @@ class Play:
         elif self.play_type == Play_Type.FIELD_GOAL_ATTEMPT:
             if self.note == "FG":
                 return Outcome_Type.FIELD_GOAL
-            elif self.note == "FGM":
+            elif self.note == "FGM" or "BLOCKED" in self.description:
                 return Outcome_Type.FIELD_GOAL_NO_GOOD
             elif "PENALTY" in description and "No Play" in description:
                 return Outcome_Type.PENALTY_NO_PLAY
@@ -260,10 +294,16 @@ class Play:
                 return Outcome_Type.KICK_FAIR_CATCH
             elif (next_play is not None and next_play.posteam != self.posteam) or self.note == "PUNT":
                 return Outcome_Type.KICK_RETURN
-            elif (next_play is not None and next_play.posteam == self.posteam) and (self.note == "ONSIDE" or self.note == "FUMBLE"):
+            elif (next_play is not None and next_play.posteam == self.posteam) and (self.note == "ONSIDE" or self.fumble):
                 return Outcome_Type.KICK_RECOVERY
             elif self.note == "TD":
-                raise Exception("Unknown touchdown return outcome: " + description)
+                if not self.fumble:
+                    return Outcome_Type.TOUCHDOWN_DEF
+                else:
+                    recover_team = self.get_fumble_recovering_team()
+                    if recover_team == self.posteam:
+                        return Outcome_Type.TOUCHDOWN_OFF
+                    return Outcome_Type.TOUCHDOWN_DEF
             elif next_play is None:
                 return Outcome_Type.KICK_RETURN
             elif self.note == "SAFETY":
@@ -286,6 +326,10 @@ class Play:
                         return Outcome_Type.TOUCHDOWN_OFF
                     elif next_play is not None and self.posteam != next_play.posteam:
                         return Outcome_Type.TOUCHDOWN_DEF
+                    elif self.interception and not self.fumble:
+                        return Outcome_Type.TOUCHDOWN_DEF
+                    elif not self.fumble and not self.interception:
+                        return Outcome_Type.TOUCHDOWN_OFF
                     else:
                         raise Exception("Unknown scoring team" + description)
                 elif "scrambles" in description:
@@ -296,7 +340,7 @@ class Play:
                 return Outcome_Type.INCOMPLETE
             elif "sacked" in description:
                 if next_play is None and (self.note == "TOUCHDOWN" or self.note == "TD") and "FUMBLES" in description:
-                    recover_team = description.split("RECOVERED by ")[-1].split("-")[0]
+                    recover_team = self.get_fumble_recovering_team()
                     if recover_team == self.posteam:
                         return Outcome_Type.TOUCHDOWN_OFF
                     return Outcome_Type.TOUCHDOWN_DEF
@@ -306,6 +350,11 @@ class Play:
                 if next_play is not None and self.posteam == next_play.posteam:
                     return Outcome_Type.TOUCHDOWN_OFF
                 elif next_play is not None and self.posteam != next_play.posteam:
+                    return Outcome_Type.TOUCHDOWN_DEF
+                elif self.fumble:
+                    recover_team = self.get_fumble_recovering_team()
+                    if recover_team == self.posteam:
+                        return Outcome_Type.TOUCHDOWN_OFF
                     return Outcome_Type.TOUCHDOWN_DEF
                 else:
                     raise Exception("Unknown scoring team" + description)
@@ -322,19 +371,27 @@ class Play:
                 return Outcome_Type.GROUND_YARDS
         elif self.play_type == Play_Type.SPIKE and self.note == "":
             return Outcome_Type.SPIKE
+        elif self.play_type == Play_Type.PENALTY_DELAY_OF_GAME and "declined" in self.description or "Personal Foul on " in self.description:
+            return Outcome_Type.PENALTY_NO_PLAY
         else:
             raise Exception("Unknown outcome: " + description + ", play type: " + str(self.play_type) + ", note: " + self.note)
         # TODO: Safety
 
     def get_play_type(self):
 
+        if self.qb_switch:
+            return Play_Type.NONE
+
+        if "Two Point Attempt" in self.description or "TWO-POINT CONVERSION ATTEMPT":
+            return Play_Type.CONVERSION_ATTEMPT
+
         if "Two-Minute Warning" in self.description:
             return Play_Type.TWO_MINUTE_WARNING
-        elif "END QUARTER" in self.description or "END GAME" in self.description:
+        if "END QUARTER" in self.description or "END GAME" in self.description or "End of quarter" in self.description or "End of half" in self.description:
             return Play_Type.END_OF_QUARTER
-        elif "pass" in self.description or "sacked" in self.description or "scrambles" in self.description:
+        if "pass" in self.description or "sacked" in self.description or "scrambles" in self.description or "ran ob" in self.description:
             return Play_Type.PASS
-        elif "right tackle" in self.description \
+        if "right tackle" in self.description \
                 or "up the middle" in self.description \
                 or "left tackle" in self.description \
                 or "left end" in self.description \
@@ -359,11 +416,9 @@ class Play:
              return Play_Type.TIMEOUT_OTHER
         elif "field goal" in self.description:
             return Play_Type.FIELD_GOAL_ATTEMPT
-        elif "Two Point Attempt" in self.description:
-            return Play_Type.CONVERSION_ATTEMPT
         elif "extra point" in self.description:
             return Play_Type.EXTRA_POINT_ATTEMPT
-        elif "PENALTY" in self.note or "Penalty" in self.description:
+        elif ("PENALTY" in self.note or "Penalty" in self.description) and "declined" not in self.description:
             if "Pass Interference" in self.description:
                 return Play_Type.PASS
             elif "Intentional Grounding" in self.description:
@@ -382,8 +437,27 @@ class Play:
             return Play_Type.ABORTED
         elif (" to " + self.posteam in self.description or " to " + self.opponent in self.description) and self.description.split(" ")[2] == "to":
             return Play_Type.RUN 
+        elif (self.in_description(" to " + self.posteam) or self.in_description(" to " + self.opponent)):
+            return Play_Type.RUN
+        elif "(Run formation)" in self.description:
+            return Play_Type.RUN
+        elif "(Punt formation)" in self.description:
+            return Play_Type.PUNT
+        elif "Personal Foul on " in self.description:
+            return Play_Type.PENALTY_NO_PLAY
+        elif "Intentional Grounding" in self.description:
+            return Play_Type.PASS
+        elif "BLANK PLAY" in self.description:
+            return Play_Type.UNKNOWN
         else:
             raise Exception("Unknown play type: " + self.description)
+
+
+class Game:
+
+    def __init__(self, game, plays):
+        self.game = game
+        self.plays = plays
 
 
 def sorted_drives(game):
@@ -402,19 +476,23 @@ def sorted_drives(game):
 
 def get_plays(game):
     plays = []
-    drives = sorted_drives(game)
+    try:
+        drives = sorted_drives(game)
+    except Exception as err:
+        print(err)
+        return []
     for drive in drives:
         i = 0
         for play in drive.plays:
             next_play = None
             if len(drive.plays) > i+1:
                 next_play = drive.plays[i+1]
-            if "End of game" not in play.description:
+            if "End of game" not in play.description and len(play.description.split(" ")) > 1:
                 try:
                     p = Play(play, next_play, drive.drive_id)
                     plays.append(p)
                 except Exception as err:
-                    print(play.description)
+                    print("ERROR: " + str(err) + " [" + play.description + "]")
                     raise err
             i += 1
     return plays
@@ -427,38 +505,25 @@ def fix_yards(plays):
         next_play = None
         if len(plays) > i+1:
             next_play = plays[i+1]
-        if play.penalty or play.challenge_type == play.is_challenge_successful():
+        if play.penalty or play.is_challenge_successful():
             play.fix_yards(next_play)
         i += 1
 
-i = 0
 
-for filename in glob.glob(dir + '*'):
+def get_processed_games():
+    games = []
+    i = 0
+    for filename in glob.glob(dir + '*'):
 
-    with open(filename, 'r') as myfile:
-        if i == 0:
+        with open(filename, 'r') as myfile:
+            data = myfile.read()
+            game = json2obj(data)
+            plays = get_plays(game)
+            fix_yards(plays)
+            if len(plays) > 0:
+                games.append(Game(game, plays))
             i += 1
-            continue
-        data = myfile.read()
-        game = json2obj(data)
-        plays = get_plays(game)
-        fix_yards(plays)
-        for play in plays:
-            print(play.description)
-            print(play.play_type)
-            print("Possession: " + str(play.posteam))
-            print("Down: " + str(play.down))
-            print("Togo: " + str(play.ydstogo))
-            print("To goal: " + str(play.togoal))
-            print("Shotgun: " + str(play.is_shotgun()))
-            print("No huddle: " + str(play.is_no_huddle()))
-            print("Wildcat: " + str(play.is_wildcat()))
-            print("->")
-            print(play.outcome_type)
-            print(play.challenge_type)
-            print("Yards: " + str(play.yards))
-            print("Clock: " + str(play.clock))
-            #print(play.yards)
-            print("----------------")
-        i += 1
-        exit()
+
+    return games
+
+get_processed_games()

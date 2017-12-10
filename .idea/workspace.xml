@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ece0497-5924-4745-bb45-41cd5dd83041" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/profootball-proces.py" afterPath="$PROJECT_DIR$/profootball-proces.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/teams.py" afterPath="$PROJECT_DIR$/teams.py" />
     </list>
@@ -64,8 +63,8 @@
       <file leaf-file-name="profootball-proces.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/profootball-proces.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6846847">
-              <caret line="457" column="38" selection-start-line="457" selection-start-column="38" selection-end-line="457" selection-end-column="38" />
+            <state vertical-scroll-proportion="0.74930364">
+              <caret line="528" column="21" selection-start-line="528" selection-start-column="21" selection-end-line="528" selection-end-column="21" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
               </folding>
@@ -76,8 +75,8 @@
       <file leaf-file-name="teams.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/teams.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="6" column="26" selection-start-line="6" selection-start-column="26" selection-end-line="6" selection-end-column="26" />
+            <state vertical-scroll-proportion="-31.666666">
+              <caret line="57" column="16" selection-start-line="57" selection-start-column="10" selection-end-line="57" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -175,23 +174,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.profootball-proces">
-    <configuration default="false" name="data_collector" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="untitled" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pfr_scraper.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
     <configuration default="false" name="data_processor" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -256,6 +238,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="untitled" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test-mn.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="teams" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="untitled" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/teams.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -383,19 +382,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python.data_collector" />
-      <item index="1" class="java.lang.String" itemvalue="Python.data_processor" />
-      <item index="2" class="java.lang.String" itemvalue="Python.profootballapi" />
-      <item index="3" class="java.lang.String" itemvalue="Python.profootball-proces" />
-      <item index="4" class="java.lang.String" itemvalue="Python.test-mn" />
+      <item index="0" class="java.lang.String" itemvalue="Python.data_processor" />
+      <item index="1" class="java.lang.String" itemvalue="Python.profootballapi" />
+      <item index="2" class="java.lang.String" itemvalue="Python.profootball-proces" />
+      <item index="3" class="java.lang.String" itemvalue="Python.test-mn" />
+      <item index="4" class="java.lang.String" itemvalue="Python.teams" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.profootball-proces" />
-        <item index="1" class="java.lang.String" itemvalue="Python.test-mn" />
-        <item index="2" class="java.lang.String" itemvalue="Python.profootballapi" />
-        <item index="3" class="java.lang.String" itemvalue="Python.data_processor" />
-        <item index="4" class="java.lang.String" itemvalue="Python.data_collector" />
+        <item index="1" class="java.lang.String" itemvalue="Python.teams" />
+        <item index="2" class="java.lang.String" itemvalue="Python.test-mn" />
+        <item index="3" class="java.lang.String" itemvalue="Python.profootballapi" />
+        <item index="4" class="java.lang.String" itemvalue="Python.data_processor" />
       </list>
     </recent_temporary>
   </component>
@@ -423,18 +422,18 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="873" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12614517" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33082706" sideWeight="0.5021097" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.503201" sideWeight="0.4978903" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.46991038" sideWeight="0.4978903" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.49838883" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39948782" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -485,23 +484,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/profootball-proces.py</url>
-          <line>385</line>
+          <line>452</line>
           <option name="timeStamp" value="92" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/profootball-proces.py</url>
-          <line>188</line>
-          <option name="timeStamp" value="102" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/profootball-proces.py</url>
-          <line>201</line>
-          <option name="timeStamp" value="104" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/profootball-proces.py</url>
-          <line>443</line>
-          <option name="timeStamp" value="105" />
+          <line>333</line>
+          <option name="timeStamp" value="113" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -514,13 +503,12 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="106" />
+      <option name="time" value="116" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="play.yrdln" />
-        <watch expression="game" />
-        <watch expression="self.description.split(&quot; &quot;)[1]" />
+        <watch expression="play" language="Python" />
+        <watch expression="next_play" />
         <watch expression="game" />
       </configuration>
     </watches-manager>
@@ -815,16 +803,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/teams.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="26" selection-start-line="6" selection-start-column="26" selection-end-line="6" selection-end-column="26" />
+        <state vertical-scroll-proportion="-31.666666">
+          <caret line="57" column="16" selection-start-line="57" selection-start-column="10" selection-end-line="57" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/profootball-proces.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6846847">
-          <caret line="457" column="38" selection-start-line="457" selection-start-column="38" selection-end-line="457" selection-end-column="38" />
+        <state vertical-scroll-proportion="0.74930364">
+          <caret line="528" column="21" selection-start-line="528" selection-start-column="21" selection-end-line="528" selection-end-column="21" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
           </folding>
