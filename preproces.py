@@ -116,17 +116,38 @@ class Play:
             self.opponent = next_play.opponent
         self.description = play.description
         self.note = play.note
+        self.shotgun = "Shotgun" in self.description
         self.wildcat = "Wildcat" in self.description
         self.penalty = "PENALTY" in self.description
         self.fumble = "FUMBLES" in self.description
         self.interception = "INTERCEPTED" in self.description
+        self.no_huddle = "No Huddle" in self.description
         self.togoal = self.to_goal()
+        self.scramble = "scrambles" in self.description
         self.qb_switch = "in at Quarterback" in self.description
         self.play_type = self.get_play_type()
         self.outcome_type = self.get_outcome_type(next_play)
         self.yards = self.yards_on_play(next_play)
         self.clock = self.clock_stopped()
         self.challenge_type = self.challenge_on_play()
+
+    def out(self):
+        print(self.description)
+        print(self.play_type)
+        print("Possession: " + str(self.posteam))
+        print("Down: " + str(self.down))
+        print("Togo: " + str(self.ydstogo))
+        print("To goal: " + str(self.togoal))
+        print("Shotgun: " + str(self.shotgun))
+        print("No huddle: " + str(self.no_huddle))
+        print("Wildcat: " + str(self.wildcat))
+        print("Scramble: " + str(self.scramble))
+        print("->")
+        print(self.outcome_type)
+        print(self.challenge_type)
+        print("Yards: " + str(self.yards))
+        print("Clock: " + str(self.clock))
+        print("----------------")
 
     def challenge_on_play(self):
         if self.posteam in ['', None] or self.opponent in ['', None]:
@@ -150,15 +171,6 @@ class Play:
                 self.yards = self.togoal - next_play.togoal
             else:
                 self.yards = next_play.togoal - (100 - self.togoal)
-
-    def is_no_huddle(self):
-        return "No Huddle" in self.description
-
-    def is_shotgun(self):
-        return "Shotgun" in self.description
-
-    def is_wildcat(self):
-        return "Wildcat" in self.description
 
     def is_challenge_successful(self):
         return self.challenge_type in [Challenge_Type.CHALLENGE_DEF_SUCCESSFUL, Challenge_Type.CHALLENGE_OFF_SUCCESSFUL]
@@ -331,6 +343,11 @@ class Play:
                         return Outcome_Type.TOUCHDOWN_DEF
                     elif not self.fumble and not self.interception:
                         return Outcome_Type.TOUCHDOWN_OFF
+                    elif self.fumble:
+                        recover_team = self.get_fumble_recovering_team()
+                        if recover_team == self.posteam:
+                            return Outcome_Type.TOUCHDOWN_OFF
+                        return Outcome_Type.TOUCHDOWN_DEF
                     else:
                         raise Exception("Unknown scoring team" + description)
                 elif "scrambles" in description:
@@ -524,26 +541,6 @@ def get_processed_games(limit=0):
             if len(plays) > 0:
                 games.append(Game(game, plays))
             i += 1
-
-            '''
-            for play in plays:
-                print(play.description)
-                print(play.play_type)
-                print("Possession: " + str(play.posteam))
-                print("Down: " + str(play.down))
-                print("Togo: " + str(play.ydstogo))
-                print("To goal: " + str(play.togoal))
-                print("Shotgun: " + str(play.is_shotgun()))
-                print("No huddle: " + str(play.is_no_huddle()))
-                print("Wildcat: " + str(play.is_wildcat()))
-                print("->")
-                print(play.outcome_type)
-                print(play.challenge_type)
-                print("Yards: " + str(play.yards))
-                print("Clock: " + str(play.clock))
-                print("Yards: " + str(play.yards))
-                print("----------------")
-            '''
 
         if len(games) == limit:
             return games

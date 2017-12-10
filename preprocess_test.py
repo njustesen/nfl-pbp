@@ -67,8 +67,11 @@ class Game_Stats:
             elif play.posteam == game.away.team:
                 self.home_team_score += 2
 
+        if play.outcome_type in [Outcome_Type.TURNOVER_INTERCEPTION, Outcome_Type.TURNOVER_FUMBLE]:
+            return
+
         if play.play_type in [preproces.Play_Type.KNEEL, preproces.Play_Type.RUN] or \
-                play.outcome_type in [preproces.Outcome_Type.SACK, preproces.Outcome_Type.GROUND_YARDS]:
+                play.outcome_type == preproces.Outcome_Type.GROUND_YARDS or play.scramble:
             if play.posteam == game.home.team:
                 self.home_team_ground_yards += play.yards
             elif play.posteam == game.away.team:
@@ -79,7 +82,8 @@ class Game_Stats:
             elif play.posteam == game.away.team:
                 self.away_team_pass_yards += play.yards
 
-games = preproces.get_processed_games(limit=3)
+
+games = preproces.get_processed_games(limit=0)
 
 
 def simulate_game(game):
@@ -88,20 +92,8 @@ def simulate_game(game):
         stats.apply_play(game.game, play)
     return stats
 
-#def stats_same(game, stats):
-
-
 for game in games:
-    stats = simulate_game(game)
-    #if not stats_same(game, stats):
-    #stats.out()
-    print("## GAME ##")
-    print("Home score: " + str(game.game.home_score) + " | " + str(stats.home_team_score))
-    print("Home p yds: " + str(game.game.home.pyds) + " | " + str(stats.home_team_pass_yards))
-    print("Home r yds: " + str(game.game.home.ryds) + " | " + str(stats.home_team_ground_yards))
-    print("Home t yds: " + str(game.game.home.totyds) + " | " + str(stats.home_team_total_yards()))
 
-    print("Away score: " + str(game.game.away_score) + " | " + str(stats.away_team_score))
-    print("Away p yds: " + str(game.game.away.pyds) + " | " + str(stats.away_team_pass_yards))
-    print("Away r yds: " + str(game.game.away.ryds) + " | " + str(stats.away_team_ground_yards))
-    print("Away t yds: " + str(game.game.away.totyds) + " | " + str(stats.away_team_total_yards()))
+    stats = simulate_game(game)
+    assert game.game.home_score == stats.home_team_score
+    assert game.game.away_score == stats.away_team_score
